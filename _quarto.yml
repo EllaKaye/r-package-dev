@@ -6,6 +6,7 @@ execute:
 
 website:
   title: "R Package Dev"
+  site-url: https://ellakaye.github.io/r-package-dev/
   navbar:
     right:
       - text: "Prerequisites"
