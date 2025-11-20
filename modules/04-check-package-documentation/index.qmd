@@ -1,7 +1,6 @@
 ---
 title: Package check and documentation
 description: Module 4
-author: Forwards teaching team
 draft: false
 ---
 

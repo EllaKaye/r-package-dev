@@ -2,7 +2,7 @@
 title: Packaging data</br>Publication and maintenance
 subtitle: R package development workshop<br>Module 5
 author: Forwards teaching team
-format: forwardspres-revealjs
+format: ellakayepres-revealjs
 ---
 
 ## Overview

@@ -1,8 +1,7 @@
 ---
 title: Function documentation and dependencies
 subtitle: R package development workshop<br>Module 2
-author: Forwards teaching team
-format: forwardspres-revealjs
+format: ellakayepres-revealjs
 ---
 
 ## Overview

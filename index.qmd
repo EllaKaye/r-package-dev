@@ -2,12 +2,13 @@
 title: "R package development workshop"
 ---
 
-Welcome to the Forwards R package development workshop!
+Welcome to the R package development workshop!
 
-The modules use materials developed by Forwards, 
+The modules use materials originally developed by [Forwards](https://forwards.github.io), 
 the taskforce for underrepresented groups in the R community. 
-
-<https://forwards.github.io/>
+I adapted and updated the material and [taught it for three years at The University of Warwick](https://warwick-stats-resources.github.io/courses.html#r-package-development-june-2025),
+then [taught the course again for Forwards](https://forwards.github.io/package-dev) in June/July 2025, as part of the Forwards teaching team.
+This iteration of the course builds on that latest version for Forwards.
 
 ## Syllabus overview
 
@@ -28,3 +29,6 @@ From there, the page for each workshop contains its schedule as well as details 
 
 Please see the [prerequisites](prerequisites.qmd) page for details on getting set up in advance of the first module.
 
+## Instructor
+
+The workshop is taught by [Ella Kaye](https://ellakaye.co.uk).
