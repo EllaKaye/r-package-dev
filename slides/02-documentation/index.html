@@ -1462,20 +1462,40 @@ display:block!important;
 <h1>NAMESPACE: imports</h1>
 
 </section>
-<section id="you-might-get-tired-of-using-all-the-time" class="slide level2">
-<h2>You might get tired of using <code>::</code> all the time</h2>
-<p>Or you might want to use an infix function</p>
+<section id="why-import-functions-into-the-package" class="slide level2">
+<h2>Why import functions into the package?</h2>
+<ul>
+<li><p>So you don’t have to use <code>::</code> all the time</p></li>
+<li><p>slightly more efficient</p></li>
+<li><p>you might want to use an infix function</p></li>
+</ul>
+</section>
+<section id="infix-operators" class="slide level2">
+<h2>Infix operators</h2>
+<p>In a package, you cannot ‘just’ use infix functions, like <code>%&gt;%</code>.</p>
+<p>You could qualify them every time, i.e.</p>
+<pre><code>magrittr::`%&gt;%`</code></pre>
+<p>Or define yourself, e.g.</p>
+<pre><code>`%&gt;%` &lt;- magittr::`%&gt;%`</code></pre>
+<p>But easiest approach is to import it into the package.</p>
+</section>
+<section id="you-can-import-functions-into-the-package" class="slide level2">
+<h2>You can <code>import</code> functions into the package</h2>
 <div class="cell" data-layout-align="center">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a></a><span class="st">`</span><span class="at">%-=%</span><span class="st">`</span> <span class="ot">&lt;-</span> roperators<span class="sc">::</span><span class="st">`</span><span class="at">%-=%</span><span class="st">`</span></span>
-<span id="cb15-2"><a></a></span>
-<span id="cb15-3"><a></a>center <span class="ot">&lt;-</span> <span class="cf">function</span>(df, select) {</span>
-<span id="cb15-4"><a></a>  <span class="cf">for</span> (nm <span class="cf">in</span> <span class="fu">names</span>(df[select])){</span>
-<span id="cb15-5"><a></a>    <span class="co"># overwrite column after subtracting the mean </span></span>
-<span id="cb15-6"><a></a>    df[[nm]] <span class="sc">%-=%</span> <span class="fu">mean</span>(df[[nm]])</span>
-<span id="cb15-7"><a></a>  }</span>
-<span id="cb15-8"><a></a>  df</span>
-<span id="cb15-9"><a></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a></a><span class="co">#&#39; @importFrom purrr keep modify</span></span>
+<span id="cb17-2"><a></a><span class="co">#&#39; @importFrom magrittr %&gt;%</span></span>
+<span id="cb17-3"><a></a></span>
+<span id="cb17-4"><a></a>col_summary <span class="ot">&lt;-</span> <span class="cf">function</span>(df, fun) {</span>
+<span id="cb17-5"><a></a>  <span class="fu">stopifnot</span>(<span class="fu">is.data.frame</span>(df))</span>
+<span id="cb17-6"><a></a></span>
+<span id="cb17-7"><a></a>  df <span class="sc">%&gt;%</span></span>
+<span id="cb17-8"><a></a>    <span class="fu">keep</span>(is.numeric) <span class="sc">%&gt;%</span></span>
+<span id="cb17-9"><a></a>    <span class="fu">modify</span>(fun)</span>
+<span id="cb17-10"><a></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
+<p><code>devtools::document()</code> will add corresponding <code>import()</code> statements to the NAMESPACE, e.g. <code>import(purr, keep, modify)</code>.</p>
+<p>Adding formal imports is slightly more efficient than using <code>::</code>.</p>
+<p>Here, the <code>@importFrom</code> tag is placed above the function in which the imported function is used.</p>
 </section>
 <section id="aside-vs" class="slide level2">
 <h2>Aside: <code>%&gt;%</code> vs <code>|&gt;</code></h2>
@@ -1490,29 +1510,12 @@ display:block!important;
 <li>Use the methods outlined in <a href="https://www.tidyverse.org/blog/2023/04/base-vs-magrittr-pipe/#using-the-native-pipe-in-packages">this tidyverse blog post</a> to ensure the package can still work with older versions of R.</li>
 </ul>
 </section>
-<section id="you-can-import-functions-into-the-package" class="slide level2">
-<h2>You can <code>import</code> functions into the package</h2>
-<div class="cell" data-layout-align="center">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a></a><span class="co">#&#39; @importFrom purrr keep modify</span></span>
-<span id="cb17-2"><a></a></span>
-<span id="cb17-3"><a></a>col_summary <span class="ot">&lt;-</span> <span class="cf">function</span>(df, fun) {</span>
-<span id="cb17-4"><a></a>  <span class="fu">stopifnot</span>(<span class="fu">is.data.frame</span>(df))</span>
-<span id="cb17-5"><a></a></span>
-<span id="cb17-6"><a></a>  df <span class="sc">|&gt;</span></span>
-<span id="cb17-7"><a></a>    <span class="fu">keep</span>(is.numeric) <span class="sc">|&gt;</span></span>
-<span id="cb17-8"><a></a>    <span class="fu">modify</span>(fun)</span>
-<span id="cb17-9"><a></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-<p><code>devtools::document()</code> will add corresponding <code>import()</code> statements to the NAMESPACE, e.g. <code>import(purr, keep, modify)</code>.</p>
-<p>Adding formal imports is slightly more efficient than using <code>::</code>.</p>
-<p>Here, the <code>@importFrom</code> tag is placed above the function in which the imported function is used.</p>
-</section>
 <section id="package-level-import-file" class="slide level2">
 <h2>Package-level import file</h2>
 <p>Imports belong to the package, not to individual functions, so alternatively you can recognise this by storing them in a central location, e.g. <code>R/animalsounds-package.R</code></p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a></a><span class="co">#&#39; @importFrom purrr keep modify</span></span>
-<span id="cb18-2"><a></a><span class="co">#&#39; @importFrom roperators %-=%</span></span>
-<span id="cb18-3"><a></a><span class="cn">NULL</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a></a><span class="co">#&#39; @importFrom purrr keep modify</span></span>
+<span id="cb19-2"><a></a><span class="co">#&#39; @importFrom magrittr %&gt;%</span></span>
+<span id="cb19-3"><a></a><span class="cn">NULL</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <aside class="notes">
 <p>This removes the possibility of multiple (redundant) imports of the same function. But harder to remember to remove import if function changes! It’s a matter of personal taste.</p>
 <style type="text/css">
@@ -1532,7 +1535,7 @@ display:block!important;
 <p>There can be several steps to importing a function. <code>usethis::use_import_from()</code> takes care of all of them.</p>
 <p>It will first create the package documentation file <code>R/animalsounds-package.R</code> (if it doesn’t already exist – you will also need to agree to this).</p>
 <div class="cell" data-layout-align="center">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a></a>usethis<span class="sc">::</span><span class="fu">use_import_from</span>(<span class="st">&quot;purrr&quot;</span>, <span class="fu">c</span>(<span class="st">&quot;keep&quot;</span>, <span class="st">&quot;modify&quot;</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a></a>usethis<span class="sc">::</span><span class="fu">use_import_from</span>(<span class="st">&quot;purrr&quot;</span>, <span class="fu">c</span>(<span class="st">&quot;keep&quot;</span>, <span class="st">&quot;modify&quot;</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <pre><code>✔ Adding &#39;purrr&#39; to Imports field in DESCRIPTION
 ✔ Adding &#39;@importFrom purrr keep&#39;, &#39;@importFrom purrr modify&#39; to &#39;R/animalsounds-package.R&#39;
@@ -1555,22 +1558,22 @@ display:block!important;
 </section>
 <section id="it-may-be-tempting-to-import-a-whole-package" class="slide level2">
 <h2>It may be tempting to import a whole package…</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a></a><span class="co">#&#39; @import purrr</span></span>
-<span id="cb21-2"><a></a>col_summary <span class="ot">&lt;-</span> <span class="cf">function</span>(df, fun) {</span>
-<span id="cb21-3"><a></a>  <span class="fu">stopifnot</span>(<span class="fu">is.data.frame</span>(df))</span>
-<span id="cb21-4"><a></a></span>
-<span id="cb21-5"><a></a>  df <span class="sc">|&gt;</span></span>
-<span id="cb21-6"><a></a>    <span class="fu">keep</span>(is.numeric) <span class="sc">|&gt;</span></span>
-<span id="cb21-7"><a></a>    <span class="fu">map_dfc</span>(fun)</span>
-<span id="cb21-8"><a></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a></a><span class="co">#&#39; @import purrr</span></span>
+<span id="cb22-2"><a></a>col_summary <span class="ot">&lt;-</span> <span class="cf">function</span>(df, fun) {</span>
+<span id="cb22-3"><a></a>  <span class="fu">stopifnot</span>(<span class="fu">is.data.frame</span>(df))</span>
+<span id="cb22-4"><a></a></span>
+<span id="cb22-5"><a></a>  df <span class="sc">|&gt;</span></span>
+<span id="cb22-6"><a></a>    <span class="fu">keep</span>(is.numeric) <span class="sc">|&gt;</span></span>
+<span id="cb22-7"><a></a>    <span class="fu">map_dfc</span>(fun)</span>
+<span id="cb22-8"><a></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="but-it-is-dangerous" class="slide level2">
 <h2>…but it is dangerous</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a></a><span class="co">#&#39; @import pkg1</span></span>
-<span id="cb22-2"><a></a><span class="co">#&#39; @import pkg2</span></span>
-<span id="cb22-3"><a></a>fun <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
-<span id="cb22-4"><a></a>  <span class="fu">fun1</span>(x) <span class="sc">+</span> <span class="fu">fun2</span>(x)</span>
-<span id="cb22-5"><a></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a></a><span class="co">#&#39; @import pkg1</span></span>
+<span id="cb23-2"><a></a><span class="co">#&#39; @import pkg2</span></span>
+<span id="cb23-3"><a></a>fun <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
+<span id="cb23-4"><a></a>  <span class="fu">fun1</span>(x) <span class="sc">+</span> <span class="fu">fun2</span>(x)</span>
+<span id="cb23-5"><a></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Works today…</p>
 <p>… but next year, what if <strong>pkg2</strong> adds a <code>fun1</code> function?</p>
 </section>
@@ -1609,16 +1612,16 @@ display:block!important;
 <h2>Example: rlang and cli</h2>
 <p>Currently we are using <code>stopifnot()</code> for argument validation</p>
 <div class="cell" data-layout-align="center">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a></a><span class="fu">stopifnot</span>(<span class="fu">is.character</span>(animal) <span class="sc">&amp;</span> <span class="fu">length</span>(animal) <span class="sc">==</span> <span class="dv">1</span>)</span>
-<span id="cb23-2"><a></a><span class="fu">stopifnot</span>(<span class="fu">is.character</span>(sound) <span class="sc">&amp;</span> <span class="fu">length</span>(sound) <span class="sc">==</span> <span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a></a><span class="fu">stopifnot</span>(<span class="fu">is.character</span>(animal) <span class="sc">&amp;</span> <span class="fu">length</span>(animal) <span class="sc">==</span> <span class="dv">1</span>)</span>
+<span id="cb24-2"><a></a><span class="fu">stopifnot</span>(<span class="fu">is.character</span>(sound) <span class="sc">&amp;</span> <span class="fu">length</span>(sound) <span class="sc">==</span> <span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <p>We might instead use <code>rlang::is_character()</code> with <code>cli::cli_abort()</code></p>
 <div class="cell" data-layout-align="center">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a></a>sound <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;woof&quot;</span>, <span class="st">&quot;bark&quot;</span>)</span>
-<span id="cb24-2"><a></a></span>
-<span id="cb24-3"><a></a><span class="cf">if</span> (<span class="sc">!</span>rlang<span class="sc">::</span><span class="fu">is_character</span>(sound, <span class="at">n =</span> <span class="dv">1</span>)) {</span>
-<span id="cb24-4"><a></a>  cli<span class="sc">::</span><span class="fu">cli_abort</span>(<span class="st">&quot;`sound` must be a single string!&quot;</span>)</span>
-<span id="cb24-5"><a></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a></a>sound <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;woof&quot;</span>, <span class="st">&quot;bark&quot;</span>)</span>
+<span id="cb25-2"><a></a></span>
+<span id="cb25-3"><a></a><span class="cf">if</span> (<span class="sc">!</span>rlang<span class="sc">::</span><span class="fu">is_character</span>(sound, <span class="at">n =</span> <span class="dv">1</span>)) {</span>
+<span id="cb25-4"><a></a>  cli<span class="sc">::</span><span class="fu">cli_abort</span>(<span class="st">&quot;`sound` must be a single string!&quot;</span>)</span>
+<span id="cb25-5"><a></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-error">
 <pre><code>Error:
 ! `sound` must be a single string!</code></pre>
@@ -1645,14 +1648,15 @@ display:block!important;
 <p><strong>cli</strong> functions can combine glue interpolation and inline classes to produce informative, nicely-formatted error messages.</p>
 <p>In <code>animal_sounds()</code> we can use</p>
 <div class="cell" data-layout-align="center">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a></a>cli<span class="sc">::</span><span class="fu">cli_abort</span>(</span>
-<span id="cb26-2"><a></a>  <span class="fu">c</span>(<span class="st">&quot;{.var animal} must be a single string!&quot;</span>,</span>
-<span id="cb26-3"><a></a>    <span class="st">&quot;i&quot;</span> <span class="ot">=</span> <span class="st">&quot;It was {.type {animal}} of length {length(animal)} instead.&quot;</span>)</span>
-<span id="cb26-4"><a></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a></a>cli<span class="sc">::</span><span class="fu">cli_abort</span>(</span>
+<span id="cb27-2"><a></a>  <span class="fu">c</span>(<span class="st">&quot;{.var animal} must be a single string!&quot;</span>,</span>
+<span id="cb27-3"><a></a>    <span class="st">&quot;i&quot;</span> <span class="ot">=</span> <span class="st">&quot;It was {.type {animal}} of length {length(animal)} instead.&quot;</span>)</span>
+<span id="cb27-4"><a></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
+<p>and similar for <code>sound</code>.</p>
 <p>This gives the error message</p>
 <div class="cell" data-layout-align="center">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a></a><span class="fu">animal_sounds</span>(<span class="fu">c</span>(<span class="st">&quot;dog&quot;</span>, <span class="st">&quot;cat&quot;</span>), <span class="fu">c</span>(<span class="st">&quot;woof&quot;</span>, <span class="st">&quot;miaow&quot;</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a></a><span class="fu">animal_sounds</span>(<span class="fu">c</span>(<span class="st">&quot;dog&quot;</span>, <span class="st">&quot;cat&quot;</span>), <span class="fu">c</span>(<span class="st">&quot;woof&quot;</span>, <span class="st">&quot;miaow&quot;</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-error">
 <pre><code>Error in `animal_sounds()`:
 ! `animal` must be a single string!
@@ -1682,6 +1686,68 @@ display:block!important;
 <li>Commit your changes to git.</li>
 <li>Push your commits for this session.</li>
 </ol>
+</section>
+<section id="best-practice-helper-functions" class="slide level2">
+<h2>Best practice: helper functions</h2>
+<p>We’ve essentially repeated code to check the <code>animal</code> and <code>sound</code> arguments. Better practice is to use a helper function.</p>
+<p>Try the following:</p>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a></a>check_arg <span class="ot">&lt;-</span> <span class="cf">function</span>(arg, <span class="at">n =</span> <span class="dv">1</span>) {</span>
+<span id="cb30-2"><a></a>    <span class="cf">if</span> (<span class="sc">!</span>rlang<span class="sc">::</span><span class="fu">is_character</span>(arg, <span class="at">n =</span> n)) {</span>
+<span id="cb30-3"><a></a>        cli<span class="sc">::</span><span class="fu">cli_abort</span>(</span>
+<span id="cb30-4"><a></a>            <span class="fu">c</span>(<span class="st">&quot;{.var arg} must be a single string!&quot;</span>,</span>
+<span id="cb30-5"><a></a>              <span class="st">&quot;i&quot;</span> <span class="ot">=</span> <span class="st">&quot;It was {.type {arg}} of length {length(arg)} instead.&quot;</span>)</span>
+<span id="cb30-6"><a></a>        )</span>
+<span id="cb30-7"><a></a>    }</span>
+<span id="cb30-8"><a></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="improvement-1-actual-arg-name" class="slide level2">
+<h2>Improvement 1: actual arg name</h2>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a></a>check_arg <span class="ot">&lt;-</span> <span class="cf">function</span>(arg, <span class="at">n =</span> <span class="dv">1</span>) {</span>
+<span id="cb31-2"><a></a>    <span class="cf">if</span> (<span class="sc">!</span>rlang<span class="sc">::</span><span class="fu">is_character</span>(arg, <span class="at">n =</span> n)) {</span>
+<span id="cb31-3"><a></a>        cli<span class="sc">::</span><span class="fu">cli_abort</span>(</span>
+<span id="cb31-4"><a></a>            <span class="fu">c</span>(</span>
+<span id="cb31-5"><a></a>        <span class="st">&quot;{.var {rlang::caller_arg(arg)}} must be a single string!&quot;</span>,</span>
+<span id="cb31-6"><a></a>        <span class="st">&quot;i&quot;</span> <span class="ot">=</span> <span class="st">&quot;It was {.type {arg}} of length {length(arg)} instead.&quot;</span></span>
+<span id="cb31-7"><a></a>      )</span>
+<span id="cb31-8"><a></a>        )</span>
+<span id="cb31-9"><a></a>    }</span>
+<span id="cb31-10"><a></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="improvement-2-calling-function" class="slide level2">
+<h2>Improvement 2: calling function</h2>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a></a>check_arg <span class="ot">&lt;-</span> <span class="cf">function</span>(arg, <span class="at">n =</span> <span class="dv">1</span>) {</span>
+<span id="cb32-2"><a></a>    <span class="cf">if</span> (<span class="sc">!</span>rlang<span class="sc">::</span><span class="fu">is_character</span>(arg, <span class="at">n =</span> n)) {</span>
+<span id="cb32-3"><a></a>        cli<span class="sc">::</span><span class="fu">cli_abort</span>(</span>
+<span id="cb32-4"><a></a>            <span class="fu">c</span>(</span>
+<span id="cb32-5"><a></a>        <span class="st">&quot;{.var {rlang::caller_arg(arg)}} must be a single string!&quot;</span>,</span>
+<span id="cb32-6"><a></a>        <span class="st">&quot;i&quot;</span> <span class="ot">=</span> <span class="st">&quot;It was {.type {arg}} of length {length(arg)} instead.&quot;</span></span>
+<span id="cb32-7"><a></a>      ),</span>
+<span id="cb32-8"><a></a>      <span class="at">call =</span> rlang<span class="sc">::</span><span class="fu">caller_env</span>()</span>
+<span id="cb32-9"><a></a>        )</span>
+<span id="cb32-10"><a></a>    }</span>
+<span id="cb32-11"><a></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="improvement-3-incorporating-n" class="slide level2">
+<h2>Improvement 3: incorporating <code>n</code></h2>
+<div class="cell" data-layout-align="center">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a></a>check_arg <span class="ot">&lt;-</span> <span class="cf">function</span>(arg, <span class="at">n =</span> <span class="dv">1</span>) {</span>
+<span id="cb33-2"><a></a>    <span class="cf">if</span> (<span class="sc">!</span>rlang<span class="sc">::</span><span class="fu">is_character</span>(arg, <span class="at">n =</span> n)) {</span>
+<span id="cb33-3"><a></a>        cli<span class="sc">::</span><span class="fu">cli_abort</span>(</span>
+<span id="cb33-4"><a></a>            <span class="fu">c</span>(</span>
+<span id="cb33-5"><a></a>        <span class="st">&quot;{.var {rlang::caller_arg(arg)}} must be a character vector of length {n}!&quot;</span>,</span>
+<span id="cb33-6"><a></a>        <span class="st">&quot;i&quot;</span> <span class="ot">=</span> <span class="st">&quot;It was {.type {arg}} of length {length(arg)} instead.&quot;</span></span>
+<span id="cb33-7"><a></a>      ),</span>
+<span id="cb33-8"><a></a>      <span class="at">call =</span> rlang<span class="sc">::</span><span class="fu">caller_env</span>()</span>
+<span id="cb33-9"><a></a>        )</span>
+<span id="cb33-10"><a></a>    }</span>
+<span id="cb33-11"><a></a>}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
 </section></section>
 <section>
 <section id="end-matter" class="title-slide slide level1 inverse center">
