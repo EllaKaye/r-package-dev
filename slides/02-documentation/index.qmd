@@ -561,6 +561,8 @@ cli::cli_abort(
 )
 ```
 
+and similar for `sound`.
+
 ```{r}
 #| echo: false
 animal_sounds <- function(animal, sound) {
@@ -602,6 +604,74 @@ Informative error messages will make using your package a much nicer experience 
 3. Load all and try giving `animal_sounds()` invalid inputs for animal and/or sound.
 4. Commit your changes to git.
 5. Push your commits for this session.
+
+## Best practice: helper functions
+
+We've essentially repeated code to check the `animal` and `sound` arguments. Better practice is to use a helper function.
+
+Try the following:
+
+```{r}
+#| eval: false
+check_arg <- function(arg, n = 1) {
+	if (!rlang::is_character(arg, n = n)) {
+		cli::cli_abort(
+			c("{.var arg} must be a single string!",
+			  "i" = "It was {.type {arg}} of length {length(arg)} instead.")
+		)
+	}
+}
+```
+
+## Improvement 1: actual arg name
+
+```{r}
+#| eval: false
+check_arg <- function(arg, n = 1) {
+	if (!rlang::is_character(arg, n = n)) {
+		cli::cli_abort(
+			c(
+        "{.var {rlang::caller_arg(arg)}} must be a single string!",
+        "i" = "It was {.type {arg}} of length {length(arg)} instead."
+      )
+		)
+	}
+}
+```
+
+## Improvement 2: calling function
+
+```{r}
+#| eval: false
+check_arg <- function(arg, n = 1) {
+	if (!rlang::is_character(arg, n = n)) {
+		cli::cli_abort(
+			c(
+        "{.var {rlang::caller_arg(arg)}} must be a single string!",
+        "i" = "It was {.type {arg}} of length {length(arg)} instead."
+      ),
+      call = rlang::caller_env()
+		)
+	}
+}
+```
+
+## Improvement 3: incorporating `n`
+
+```{r}
+#| eval: false
+check_arg <- function(arg, n = 1) {
+	if (!rlang::is_character(arg, n = n)) {
+		cli::cli_abort(
+			c(
+        "{.var {rlang::caller_arg(arg)}} must be a character vector of length {n}!",
+        "i" = "It was {.type {arg}} of length {length(arg)} instead."
+      ),
+      call = rlang::caller_env()
+		)
+	}
+}
+```
 
 # End matter {.inverse}
 
