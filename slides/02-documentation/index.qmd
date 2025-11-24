@@ -368,22 +368,53 @@ usethis::use_package("glue", type = "Suggests")
 
 # NAMESPACE: imports {.inverse}
 
-## You might get tired of using `::` all the time
+## Why import functions into the package?
 
-Or you might want to use an infix function
+- So you don't have to use `::` all the time
+
+- slightly more efficient
+
+- you might want to use an infix function
+
+## Infix operators
+
+In a package, you cannot 'just' use infix functions, like `%>%`.
+
+You could qualify them every time, i.e.
+
+``` 
+magrittr::`%>%`
+```
+
+Or define yourself, e.g.
+
+```
+`%>%` <- magittr::`%>%`
+```
+
+But easiest approach is to import it into the package.
+
+## You can `import` functions into the package
 
 ```{r}
 #| eval: false
-`%-=%` <- roperators::`%-=%`
+#' @importFrom purrr keep modify
+#' @importFrom magrittr %>%
 
-center <- function(df, select) {
-  for (nm in names(df[select])){
-    # overwrite column after subtracting the mean 
-    df[[nm]] %-=% mean(df[[nm]])
-  }
-  df
+col_summary <- function(df, fun) {
+  stopifnot(is.data.frame(df))
+
+  df %>%
+    keep(is.numeric) %>%
+    modify(fun)
 }
 ```
+
+`devtools::document()` will add corresponding `import()` statements to the NAMESPACE, e.g. `import(purr, keep, modify)`.
+
+Adding formal imports is slightly more efficient than using `::`.
+
+Here, the `@importFrom` tag is placed above the function in which the imported function is used.
 
 ## Aside: `%>%` vs `|>`
 
@@ -401,35 +432,13 @@ Depends:
 
 - Use the methods outlined in [this tidyverse blog post](https://www.tidyverse.org/blog/2023/04/base-vs-magrittr-pipe/#using-the-native-pipe-in-packages) to ensure the package can still work with older versions of R.
 
-## You can `import` functions into the package
-
-```{r}
-#| eval: false
-#' @importFrom purrr keep modify
-
-col_summary <- function(df, fun) {
-  stopifnot(is.data.frame(df))
-
-  df |>
-    keep(is.numeric) |>
-    modify(fun)
-}
-```
-
-`devtools::document()` will add corresponding `import()` statements to the NAMESPACE, e.g. `import(purr, keep, modify)`.
-
-Adding formal imports is slightly more efficient than using `::`.
-
-Here, the `@importFrom` tag is placed above the function in which the imported function is used.
-
-
 ## Package-level import file
 
 Imports belong to the package, not to individual functions, so alternatively you can recognise this by storing them in a central location, e.g. `R/animalsounds-package.R`
 
 ```r
 #' @importFrom purrr keep modify
-#' @importFrom roperators %-=%
+#' @importFrom magrittr %>%
 NULL
 ```
 
