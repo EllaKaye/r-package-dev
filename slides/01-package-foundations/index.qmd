@@ -566,7 +566,7 @@ Take a look at the repo on GitHub. There is no `/R` folder as that folder is emp
 During the demo, will need to run `use_github("Warwick-Stats-Resources")` as by default use_github goes to my personal repo
 :::
 
-# A first function
+# A first function {.inverse}
 
 ## Adding functions
 
