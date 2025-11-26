@@ -343,6 +343,16 @@ It's also a good idea to vaccinate. This implements best practice by adding file
 usethis::git_vaccinate() 
 ```
 
+## git default branch
+
+Best practice is to have a default branch named "main".
+This can be set with:
+
+```{r}
+#| eval: false
+usethis::git_default_branch_configure(name = "main")
+```
+
 ## Create a GitHub PAT
 
 The **usethis** package uses personal access tokens (PAT) to communicate with GitHub.
@@ -555,6 +565,8 @@ Take a look at the repo on GitHub. There is no `/R` folder as that folder is emp
 
 During the demo, will need to run `use_github("Warwick-Stats-Resources")` as by default use_github goes to my personal repo
 :::
+
+# A first function
 
 ## Adding functions
 
