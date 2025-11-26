@@ -207,7 +207,7 @@
     "href": "slides/01-package-foundations/index.html#devtools-and-usethis",
     "title": "Package foundations",
     "section": "devtools and usethis",
-    "text": "devtools and usethis\nWe can use devtools right away to check our system is setup for package development.\n\ninstall.packages(\"devtools\")\n\n\nlibrary(devtools)\n\n\nhas_devel()\n\nYour system is ready to build packages!\n\n\nInstalling devtools will also install usethis.\nCheck you have the latest version of usethis and update if not:\n\npackageVersion(\"usethis\")\n\n[1] '3.1.0'"
+    "text": "devtools and usethis\nWe can use devtools right away to check our system is setup for package development.\n\ninstall.packages(\"devtools\")\n\n\nlibrary(devtools)\n\n\nhas_devel()\n\nYour system is ready to build packages!\n\n\nInstalling devtools will also install usethis.\nCheck you have the latest version of usethis and update if not:\n\npackageVersion(\"usethis\")\n\n[1] '3.2.1'"
   },
   {
     "objectID": "slides/01-package-foundations/index.html#git-sitrep",
@@ -229,6 +229,13 @@
     "title": "Package foundations",
     "section": "git vaccinate",
     "text": "git vaccinate\nIt’s also a good idea to vaccinate. This implements best practice by adding files to your global .gitignore:\n\nusethis::git_vaccinate()"
+  },
+  {
+    "objectID": "slides/01-package-foundations/index.html#git-default-branch",
+    "href": "slides/01-package-foundations/index.html#git-default-branch",
+    "title": "Package foundations",
+    "section": "git default branch",
+    "text": "git default branch\nBest practice is to have a default branch named “main”. This can be set with:\n\nusethis::git_default_branch_configure(name = \"main\")"
   },
   {
     "objectID": "slides/01-package-foundations/index.html#create-a-github-pat",
